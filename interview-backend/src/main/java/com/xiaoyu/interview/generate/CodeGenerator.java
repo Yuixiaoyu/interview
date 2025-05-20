@@ -15,7 +15,6 @@ import java.io.Writer;
 /**
  * 代码生成器
  *
-
  */
 public class CodeGenerator {
 
@@ -28,10 +27,10 @@ public class CodeGenerator {
      */
     public static void main(String[] args) throws TemplateException, IOException {
         // 指定生成参数
-        String packageName = "com.yupi.springbootinit";
-        String dataName = "用户评论";
-        String dataKey = "userComment";
-        String upperDataKey = "UserComment";
+        String packageName = "com.xiaoyu.interview";
+        String dataName = "题库题目关联表";
+        String dataKey = "questionBankQuestion";
+        String upperDataKey = "QuestionBankQuestion";
 
         // 封装生成参数
         Map<String, Object> dataModel = new HashMap<>();
