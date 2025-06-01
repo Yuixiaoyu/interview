@@ -18,6 +18,7 @@ import com.xiaoyu.interview.model.entity.Question;
 import com.xiaoyu.interview.model.entity.QuestionBank;
 import com.xiaoyu.interview.model.entity.User;
 import com.xiaoyu.interview.model.vo.QuestionBankVO;
+import com.xiaoyu.interview.model.vo.QuestionVO;
 import com.xiaoyu.interview.service.QuestionBankService;
 import com.xiaoyu.interview.service.QuestionService;
 import com.xiaoyu.interview.service.UserService;
@@ -147,14 +148,17 @@ public class QuestionBankController {
         ThrowUtils.throwIf(questionBank == null, ErrorCode.NOT_FOUND_ERROR);
         //查询题库封装
         QuestionBankVO questionBankVO = questionBankService.getQuestionBankVO(questionBank, request);
-
         //是否要关联查询题库下的题目列表
         boolean needQueryQuestionList = questionBankQueryRequest.isNeedQueryQuestionList();
         if (needQueryQuestionList) {
             QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setQuestionBankId(id);
+            //按需支持更多搜索参数，例如分页
+            questionQueryRequest.setPageSize(questionBankQueryRequest.getPageSize());
+            questionQueryRequest.setCurrent(questionBankQueryRequest.getCurrent());
             Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-            questionBankVO.setQuestionPage(questionPage);
+            Page<QuestionVO> questionVOPage = questionService.getQuestionVOPage(questionPage, request);
+            questionBankVO.setQuestionPage(questionVOPage);
         }
         // 获取封装类
         return ResultUtils.success(questionBankVO);
@@ -190,7 +194,7 @@ public class QuestionBankController {
         long current = questionBankQueryRequest.getCurrent();
         long size = questionBankQueryRequest.getPageSize();
         // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<QuestionBank> questionBankPage = questionBankService.page(new Page<>(current, size),
                 questionBankService.getQueryWrapper(questionBankQueryRequest));

@@ -36,8 +36,6 @@ import java.util.stream.Collectors;
 
 /**
  * 题目服务实现
- *
-
  */
 @Service
 @Slf4j
@@ -56,7 +54,7 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
      * @param add      对创建的数据进行校验
      */
     @Override
-    public void validQuestion(Question question, boolean add)  {
+    public void validQuestion(Question question, boolean add) {
         ThrowUtils.throwIf(question == null, ErrorCode.PARAMS_ERROR);
         // todo 从对象中取值
         String title = question.getTitle();
@@ -254,9 +252,12 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
                     .select(QuestionBankQuestion::getQuestionId)
                     .eq(QuestionBankQuestion::getQuestionBankId, questionBankId);
             List<QuestionBankQuestion> questionList = questionBankQuestionService.list(lambdaQueryWrapper);
-            if (CollUtil.isNotEmpty(questionList)){
+            if (CollUtil.isNotEmpty(questionList)) {
                 Set<Long> questionIdSet = questionList.stream().map(QuestionBankQuestion::getQuestionId).collect(Collectors.toSet());
-                queryWrapper.in("id",questionIdSet);
+                queryWrapper.in("id", questionIdSet);
+            } else {
+                //题库为空则返回空列表
+                return new Page<>(current, size,0);
             }
         }
 
